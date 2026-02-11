@@ -25,6 +25,14 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Sensitive credentials and service accounts
+service-account.json
+**/service-account.json
+*.pem
+*.key
+credentials.json
+firebase-adminsdk*.json
+
 # IDE
 .vscode/
 .idea/
