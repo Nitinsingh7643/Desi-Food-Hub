@@ -1,0 +1,98 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --background: 12 100% 98%;
+    /* #FFF7F5 */
+    --foreground: 215 28% 17%;
+    /* #1F2937 */
+
+    --card: 0 0% 100%;
+    /* #FFFFFF */
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    --primary: 355.4 76% 55.1%;
+    /* #E23744 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 5.3 100% 69%;
+    /* #FF6F61 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 12 30% 95%;
+    /* Slightly darker than bg */
+    --muted-foreground: 215 20% 45%;
+
+    --accent: 5.3 100% 96%;
+    /* Very light tint of secondary */
+    --accent-foreground: 355.4 76% 55.1%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 27% 93%;
+    /* #F3E8E8 */
+    --input: 0 27% 93%;
+    --ring: 355.4 76% 55.1%;
+
+    --radius: 0.75rem;
+    /* Slightly rounder for this friendly theme */
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    /* #0a0a0b - Rich Dark */
+    --foreground: 210 40% 98%;
+
+    --card: 240 5% 10%;
+    /* #18181b */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 24.6 95% 53.1%;
+    /* Orange */
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-md border border-border/50 shadow-xl;
+  }
+
+  .glass-nav {
+    @apply bg-background/80 backdrop-blur-lg border-b border-border;
+  }
+}
