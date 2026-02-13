@@ -1,5 +1,7 @@
 # Quick Deployment Steps
 
+> **🎓 Student?** You can get $200 in Render credits + Vercel Pro FREE with [GitHub Student Developer Pack](https://education.github.com/pack)! See [GITHUB_STUDENT_PACK.md](./GITHUB_STUDENT_PACK.md) for details.
+
 Follow these steps to deploy your Desi Food Hub application:
 
 ## 🚀 Quick Start (15 minutes)
