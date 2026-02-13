@@ -409,7 +409,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Nitin Singh**
 - GitHub: [@Nitinsingh7643](https://github.com/Nitinsingh7643)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- LinkedIn: [Your LinkedIn](https://www.linkedin.com/in/nitinsingh9550/)
 
 ---
 
@@ -426,7 +426,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email your-email@example.com or open an issue in this repository.
+For support, email your-nitinsingh62078162832gmail.com or open an issue in this repository.
 
 ---
 
