@@ -83,7 +83,11 @@ export default function OrderTracker() {
 
                         {/* Map Placeholder */}
                         <div className="h-32 w-full bg-zinc-800 relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-[url('https://static-maps.yandex.ru/1.x/?ll=84.0153,24.9490&z=13&l=map&size=600,300&lang=en_US')] bg-cover bg-center" />
+                            {/* Modern Dark Map Background */}
+                            <div className="absolute inset-0 bg-[url('https://basemaps.cartocdn.com/dark_all/12/2884/1709.png')] bg-cover bg-center opacity-100 transition-transform duration-1000 group-hover:scale-105" />
+                            {/* Gradient Overlay for Depth */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none" />
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-xs text-zinc-400 bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
                                     <MapPin size={12} className="inline mr-1 text-primary" /> Live Tracking Map
