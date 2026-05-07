@@ -11,7 +11,9 @@ export interface IOrderItem {
 export interface IOrder extends Document {
     user: mongoose.Types.ObjectId;
     items: IOrderItem[];
-    shippingAddress: string;
+    orderType: 'Delivery' | 'Takeaway' | 'Dine-In';
+    tableNumber?: string;
+    shippingAddress?: string;
     paymentMethod: 'COD' | 'Online';
     paymentResult?: {
         id?: string;
@@ -48,9 +50,17 @@ const orderSchema = new mongoose.Schema<IOrder>({
             image: { type: String }
         }
     ],
+    orderType: {
+        type: String,
+        enum: ['Delivery', 'Takeaway', 'Dine-In'],
+        default: 'Delivery'
+    },
+    tableNumber: {
+        type: String
+    },
     shippingAddress: {
         type: String,
-        required: true
+        required: false
     },
     paymentMethod: {
         type: String,

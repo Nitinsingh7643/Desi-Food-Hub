@@ -7,7 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, Tag, MapPin, Loader2, Wallet, CreditCard, Banknote } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, Tag, MapPin, Loader2, Wallet, CreditCard, Banknote, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { createOrder, createPaymentOrder, verifyPayment } from "@/lib/api/auth";
 import { validateCoupon } from "@/lib/api/coupons";
@@ -25,6 +25,8 @@ export default function CartPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isValidating, setIsValidating] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'COD' | 'Online'>('COD');
+    const [orderType, setOrderType] = useState<'Delivery' | 'Takeaway' | 'Dine-In'>('Delivery');
+    const [tableNumber, setTableNumber] = useState("");
 
     // Load Razorpay Script
     const loadRazorpay = () => {
@@ -49,7 +51,7 @@ export default function CartPage() {
     }, [user]);
 
     // Calculate Fees
-    const deliveryFee = cartTotal > 499 ? 0 : 40;
+    const deliveryFee = orderType === 'Delivery' ? (cartTotal > 499 ? 0 : 40) : 0;
     const platformFee = 5;
     const taxes = Math.round(cartTotal * 0.05);
     const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
@@ -64,7 +66,8 @@ export default function CartPage() {
             return;
         }
 
-        if (deliveryAddress.length < 10) return;
+        if (orderType === 'Delivery' && deliveryAddress.length < 10) return;
+        if (orderType === 'Dine-In' && tableNumber.trim() === '') return;
 
         setIsSubmitting(true);
         try {
@@ -79,7 +82,9 @@ export default function CartPage() {
                     price: item.product.price,
                     image: item.product.image
                 })),
-                shippingAddress: deliveryAddress,
+                orderType,
+                tableNumber: orderType === 'Dine-In' ? tableNumber : undefined,
+                shippingAddress: orderType === 'Delivery' ? deliveryAddress : undefined,
                 paymentMethod: paymentMethod,
                 totalPrice: finalTotal
             };
@@ -297,32 +302,78 @@ export default function CartPage() {
                     {/* Right Column: Address & Summary */}
                     <div className="w-full lg:w-96 space-y-6">
 
-                        {/* Delivery Address Section */}
+                        {/* Order Type Selection */}
                         <div className="bg-zinc-900 border border-white/5 rounded-2xl p-6">
                             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                <MapPin className="text-primary" /> Delivery Details
+                                <Package className="text-primary" /> Order Type
                             </h2>
-
-                            {!isAuthenticated && (
-                                <div className="text-sm text-zinc-400 mb-4 bg-zinc-800/50 p-4 rounded-xl border border-zinc-700">
-                                    <p className="mb-2">Please login to save your address.</p>
-                                    <Link href="/login" className="text-primary hover:underline">Login Now</Link>
-                                </div>
-                            )}
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400">Address</label>
-                                <textarea
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                                    placeholder="Enter your full delivery address..."
-                                    className="w-full min-h-[100px] bg-zinc-800 border-zinc-700 rounded-xl p-3 text-sm focus:ring-primary/50 text-white resize-none"
-                                />
-                                {deliveryAddress.length < 5 && deliveryAddress.length > 0 && (
-                                    <p className="text-xs text-red-500">Please enter a valid address.</p>
-                                )}
+                            <div className="grid grid-cols-3 gap-2">
+                                {['Delivery', 'Takeaway', 'Dine-In'].map((type) => (
+                                    <div
+                                        key={type}
+                                        onClick={() => setOrderType(type as any)}
+                                        className={`text-center py-2 px-1 rounded-xl border text-sm cursor-pointer transition-all ${orderType === type ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
+                                    >
+                                        {type}
+                                    </div>
+                                ))}
                             </div>
                         </div>
+
+                        {/* Delivery Details OR Table Number */}
+                        {orderType === 'Delivery' && (
+                            <div className="bg-zinc-900 border border-white/5 rounded-2xl p-6">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <MapPin className="text-primary" /> Delivery Details
+                                </h2>
+
+                                {!isAuthenticated && (
+                                    <div className="text-sm text-zinc-400 mb-4 bg-zinc-800/50 p-4 rounded-xl border border-zinc-700">
+                                        <p className="mb-2">Please login to save your address.</p>
+                                        <Link href="/login" className="text-primary hover:underline">Login Now</Link>
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-400">Address</label>
+                                    <textarea
+                                        value={deliveryAddress}
+                                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                                        placeholder="Enter your full delivery address..."
+                                        className="w-full min-h-[100px] bg-zinc-800 border-zinc-700 rounded-xl p-3 text-sm focus:ring-primary/50 text-white resize-none"
+                                    />
+                                    {deliveryAddress.length < 5 && deliveryAddress.length > 0 && (
+                                        <p className="text-xs text-red-500">Please enter a valid address.</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {orderType === 'Dine-In' && (
+                            <div className="bg-zinc-900 border border-white/5 rounded-2xl p-6">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <MapPin className="text-primary" /> Table Number
+                                </h2>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-400">Where are you sitting?</label>
+                                    <Input
+                                        value={tableNumber}
+                                        onChange={(e) => setTableNumber(e.target.value)}
+                                        placeholder="e.g. Table 5"
+                                        className="bg-zinc-800 border-zinc-700 focus:ring-primary/50 text-white"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                        
+                        {orderType === 'Takeaway' && (
+                            <div className="bg-zinc-900 border border-white/5 rounded-2xl p-6">
+                                <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+                                    <Package className="text-primary" /> Self Pickup
+                                </h2>
+                                <p className="text-sm text-zinc-400">Your order will be packed and ready for you to pick up at the counter.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Payment Method Selection */}
@@ -420,14 +471,14 @@ export default function CartPage() {
                         </div>
 
                         <Button
-                            disabled={deliveryAddress.length < 10 || isSubmitting}
+                            disabled={(orderType === 'Delivery' && deliveryAddress.length < 10) || (orderType === 'Dine-In' && tableNumber.trim() === '') || isSubmitting}
                             onClick={handleCheckout}
                             className="w-full h-12 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSubmitting ? (
                                 <><Loader2 className="animate-spin mr-2" /> Processing...</>
                             ) : (
-                                <>{deliveryAddress.length < 10 ? "Enter Address" : "Checkout"} <ArrowRight size={20} className="ml-2" /></>
+                                <>{orderType === 'Delivery' && deliveryAddress.length < 10 ? "Enter Address" : orderType === 'Dine-In' && tableNumber.trim() === '' ? "Enter Table No." : "Checkout"} <ArrowRight size={20} className="ml-2" /></>
                             )}
                         </Button>
 

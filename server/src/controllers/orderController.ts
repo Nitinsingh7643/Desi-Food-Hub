@@ -8,9 +8,12 @@ import { sendOrderConfirmationEmail } from '../utils/emailService';
 // @route   POST /api/orders
 // @access  Private
 export const createOrder = async (req: AuthRequest, res: Response) => {
+    console.log("Creating Order. Body:", JSON.stringify(req.body, null, 2));
     try {
         const {
             orderItems,
+            orderType,
+            tableNumber,
             shippingAddress,
             paymentMethod,
             totalPrice,
@@ -28,6 +31,8 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
             const order = new Order({
                 user: req.user._id,
                 items: orderItems,
+                orderType: orderType || 'Delivery',
+                tableNumber,
                 shippingAddress,
                 paymentMethod,
                 totalAmount: totalPrice,
@@ -59,7 +64,12 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
             // Real-time: Emit new order to admin room
             const io = req.app.get('io');
             if (io) {
-                io.to('admin_room').emit('newOrder', await createdOrder.populate('user', 'name email'));
+                try {
+                    const populatedOrder = await Order.findById(createdOrder._id).populate('user', 'name email');
+                    io.to('admin_room').emit('newOrder', populatedOrder);
+                } catch (socketErr) {
+                    console.error("Socket emit failed:", socketErr);
+                }
             }
 
             res.status(201).json({
