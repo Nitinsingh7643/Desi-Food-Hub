@@ -1,16 +1,19 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from "@/context/AuthContext";
-import { motion } from 'framer-motion';
-import { Search, Star, Clock, Tag, TrendingUp, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Star, Clock, Tag, TrendingUp, Sparkles, MapPin, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/Button";
 import CategorySlider from "@/components/home/CategorySlider";
 import MenuGrid from "@/components/home/MenuGrid";
 import Footer from "@/components/common/Footer";
 import ChatBot from "@/components/features/ChatBot";
+import { getMyOrders } from '@/lib/api/auth';
 
 export default function UserHome() {
     const { user } = useAuth();
+    const [orders, setOrders] = useState<any[]>([]);
+    const [loadingOrders, setLoadingOrders] = useState(true);
     const currentTime = new Date();
     const hours = currentTime.getHours();
 
@@ -18,11 +21,25 @@ export default function UserHome() {
     if (hours >= 12 && hours < 17) greeting = 'Good Afternoon';
     if (hours >= 17) greeting = 'Good Evening';
 
-    // Mock Data for UI
-    const recentOrders = [
-        { id: 1, name: 'Chicken Biryani', image: 'https://images.unsplash.com/photo-1563245372-f21727e5a3c6?q=80&w=200&auto=format&fit=crop', price: '₹299', date: 'Yesterday' },
-        { id: 2, name: 'Paneer Roll', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=200&auto=format&fit=crop', price: '₹149', date: '2 days ago' },
-    ];
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await getMyOrders(token);
+                    if (response.success) {
+                        setOrders(response.data.slice(0, 3)); // Show top 3 recent orders
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch orders:", error);
+                } finally {
+                    setLoadingOrders(false);
+                }
+            }
+        };
+
+        fetchOrders();
+    }, []);
 
     const offers = [
         { id: 1, code: 'DESI50', title: '50% OFF', desc: 'On your first biryani order', color: 'from-orange-500 to-red-600' },
@@ -46,7 +63,7 @@ export default function UserHome() {
                             {greeting}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">{user?.name?.split(' ')[0] || 'Foodie'}!</span>
                         </h1>
                         <p className="text-zinc-400 text-lg mb-6 flex items-center gap-2">
-                            <MapPin size={16} className="text-primary" /> Delivering to: <span className="text-white font-medium border-b border-dashed border-zinc-600">Home • Sasaram</span>
+                            <MapPin size={16} className="text-primary" /> Delivering to: <span className="text-white font-medium border-b border-dashed border-zinc-600">{user?.address || 'Set your location'}</span>
                         </p>
 
                         {/* Search Bar */}
@@ -83,7 +100,9 @@ export default function UserHome() {
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="text-xs font-bold tracking-widest text-zinc-500 uppercase">Desi Rewards</p>
-                                        <h3 className="text-2xl font-bold text-white mt-1">Gold Member</h3>
+                                        <h3 className="text-2xl font-bold text-white mt-1">
+                                            {(user as any)?.points > 5000 ? 'Platinum' : (user as any)?.points > 1000 ? 'Gold' : 'Silver'} Member
+                                        </h3>
                                     </div>
                                     <div className="bg-yellow-500/20 text-yellow-500 p-2 rounded-lg">
                                         <Star size={20} fill="currentColor" />
@@ -92,9 +111,9 @@ export default function UserHome() {
                                 <div>
                                     <p className="text-zinc-400 text-sm mb-1">Available Points</p>
                                     <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                                        2,450
+                                        {(user as any)?.points?.toLocaleString() || '0'}
                                     </p>
-                                    <p className="text-xs text-zinc-600 mt-2">Worth ₹245.00</p>
+                                    <p className="text-xs text-zinc-600 mt-2">Worth ₹{((user as any)?.points || 0) / 10}.00</p>
                                 </div>
                             </div>
                         </div>
@@ -134,23 +153,43 @@ export default function UserHome() {
                         <h2 className="text-xl font-bold text-white">Order Again</h2>
                     </div>
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {recentOrders.map((item) => (
-                        <div key={item.id} className="bg-white/5 border border-white/5 p-3 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-colors group cursor-pointer">
-                            <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
-                            <div className="flex-1">
-                                <h4 className="font-bold text-white group-hover:text-primary transition-colors">{item.name}</h4>
-                                <div className="flex items-center text-xs text-zinc-400 mt-1 gap-2">
-                                    <span>{item.price}</span>
-                                    <span>•</span>
-                                    <span>{item.date}</span>
+                    {loadingOrders ? (
+                        <div className="col-span-full flex items-center justify-center py-8 text-zinc-500 gap-2">
+                            <Loader2 className="animate-spin" size={20} />
+                            Fetching your history...
+                        </div>
+                    ) : orders.length > 0 ? (
+                        orders.map((item) => (
+                            <div key={item._id} className="bg-white/5 border border-white/5 p-3 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-colors group cursor-pointer">
+                                <div className="w-16 h-16 rounded-lg bg-zinc-800 flex items-center justify-center overflow-hidden">
+                                    <img
+                                        src={item.orderItems[0]?.image || 'https://via.placeholder.com/150'}
+                                        alt={item.orderItems[0]?.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-white group-hover:text-primary transition-colors line-clamp-1">
+                                        {item.orderItems[0]?.name} {item.orderItems.length > 1 && `+${item.orderItems.length - 1}`}
+                                    </h4>
+                                    <div className="flex items-center text-xs text-zinc-400 mt-1 gap-2">
+                                        <span>₹{item.totalPrice}</span>
+                                        <span>•</span>
+                                        <span className="capitalize">{new Date(item.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                    <ArrowRight size={16} />
                                 </div>
                             </div>
-                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                                <ArrowRight size={16} />
-                            </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full bg-white/5 border border-dashed border-white/10 rounded-xl p-8 text-center text-zinc-500">
+                            No recent orders yet. Time to change that!
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 

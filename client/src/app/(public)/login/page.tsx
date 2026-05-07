@@ -84,7 +84,7 @@ export default function LoginPage() {
     }, [authMethod, confirmationResult]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.type]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -106,18 +106,45 @@ export default function LoginPage() {
 
     const handleGoogleLogin = async () => {
         setLoading(true);
+        setError("");
         try {
+            // Step 1: Firebase Google Popup
             const result = await signInWithPopup(auth, googleProvider);
             const token = await result.user.getIdToken();
 
-            // Send to backend
-            const data = await googleLogin(token);
-            if (data.success) {
-                login(data.token, data.user);
+            // Step 2: Exchange Firebase token with our backend
+            try {
+                const data = await googleLogin(token);
+                if (data.success) {
+                    login(data.token, data.user);
+                }
+            } catch (apiError: any) {
+                // Provide specific, actionable error messages
+                if (apiError.code === 'ERR_NETWORK' || apiError.message?.includes('Network Error') || apiError.message?.includes('Backend Unreachable')) {
+                    setError("Cannot reach the server. Make sure your backend is running on port 5000 (run 'npm run dev' in the server folder).");
+                } else if (apiError.message?.includes('Mixed Content')) {
+                    setError("Deployment error: Set NEXT_PUBLIC_API_URL to your Render backend URL in Vercel settings.");
+                } else if (apiError.message?.includes('CORS')) {
+                    setError("CORS error: Your backend is not allowing requests from this address. Check CLIENT_URL in server/.env.");
+                } else {
+                    const msg = apiError.response?.data?.error || apiError.response?.data?.message || apiError.message;
+                    setError(`Sign in failed: ${msg}`);
+                }
             }
-        } catch (error: any) {
-            console.error(error);
-            setError(`Google Sign In Failed: ${error.message}`);
+        } catch (firebaseError: any) {
+            // Firebase-level errors (popup closed, network, etc.)
+            if (firebaseError.code === 'auth/popup-closed-by-user') {
+                setError("Sign-in popup was closed. Please try again.");
+            } else if (firebaseError.code === 'auth/network-request-failed') {
+                setError("Network request failed. Please check your internet connection and try again.");
+            } else if (firebaseError.code === 'auth/unauthorized-domain') {
+                setError("This domain is not authorized in Firebase. Go to Firebase Console → Authentication → Settings → Authorized Domains and add this domain.");
+            } else if (firebaseError.code === 'auth/internal-error') {
+                setError("Firebase internal error. Please try again in a few moments.");
+            } else {
+                const msg = firebaseError.code || firebaseError.message || 'Unknown error';
+                setError(`Google Sign In Failed: ${msg}`);
+            }
         } finally {
             setLoading(false);
         }
@@ -279,6 +306,7 @@ export default function LoginPage() {
                                         <Mail className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500 group-focus-within:text-primary transition-colors" />
                                         <Input
                                             type="email"
+                                            name="email"
                                             value={formData.email}
                                             onChange={handleChange}
                                             className="pl-10 h-12 bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-primary/20 rounded-xl"
@@ -299,6 +327,7 @@ export default function LoginPage() {
                                         <Lock className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500 group-focus-within:text-primary transition-colors" />
                                         <Input
                                             type="password"
+                                            name="password"
                                             value={formData.password}
                                             onChange={handleChange}
                                             className="pl-10 h-12 bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-primary/20 rounded-xl"

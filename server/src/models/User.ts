@@ -9,6 +9,7 @@ export interface IUser extends Document {
     avatar: string;
     phone: string;
     address: string;
+    points: number;
     createdAt: Date;
     matchPassword(enteredPassword: string): Promise<boolean>;
 }
@@ -49,6 +50,10 @@ const userSchema = new mongoose.Schema<IUser>({
     address: {
         type: String,
         default: ''
+    },
+    points: {
+        type: Number,
+        default: 0
     },
     createdAt: {
         type: Date,

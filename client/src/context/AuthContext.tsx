@@ -12,6 +12,7 @@ interface User {
     avatar?: string;
     phone?: string;
     address?: string;
+    points?: number;
 }
 
 interface AuthContextType {

@@ -34,11 +34,11 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-5xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-muted-foreground leading-[1.1]"
+                        className="text-6xl lg:text-8xl font-black bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/20 leading-[0.9] tracking-tighter"
                     >
-                        Authentic Desi Flavors<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FC8019] to-pink-500">
-                            Delivered Hot.
+                        Authentic Desi<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500">
+                            Flavors.
                         </span>
                     </motion.h1>
 
@@ -81,16 +81,15 @@ export default function Hero() {
                         <div className="relative group">
                             <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-pink-500 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500" />
                             <img
-                                src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1000&auto=format&fit=crop"
-                                alt="Pizza"
-                                className="relative rounded-[2.5rem] shadow-2xl w-full object-cover aspect-[4/3] border-4 border-white/5"
+                                src="/desifood-mockup.png"
+                                alt="Desi Food Hub App Mockup"
+                                className="relative rounded-[2.5rem] shadow-2xl w-full object-contain aspect-auto border-0"
                             />
 
                             {/* Float Card */}
                             <div className="absolute -bottom-6 -left-10 bg-card/80 backdrop-blur-xl p-4 rounded-2xl border border-border shadow-xl flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full overflow-hidden bg-white">
-                                    <img src="/logo.png" className="w-full h-full object-cover" alt="DFH" />
-                                    {/* Placeholder for Desi Food Hub Logo if available, else generic */}
+                                <div className="w-12 h-12 rounded-full overflow-hidden bg-orange-500 flex items-center justify-center text-white font-black">
+                                    DFH
                                 </div>
                                 <div>
                                     <p className="text-foreground font-bold text-sm">Special Thali</p>

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
+import User from '../models/User';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import { sendOrderConfirmationEmail } from '../utils/emailService';
 
@@ -37,6 +38,14 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
             });
 
             const createdOrder = await order.save();
+
+            // Award Points (10 points per ₹100)
+            if (req.user) {
+                const pointsToAward = Math.floor(totalPrice / 10);
+                await User.findByIdAndUpdate(req.user._id, {
+                    $inc: { points: pointsToAward }
+                });
+            }
 
             // Send Confirmation Email
             if (req.user?.email) {

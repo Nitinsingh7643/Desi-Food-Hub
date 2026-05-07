@@ -36,8 +36,8 @@ export default function Navbar() {
                 animate={{ y: 0 }}
                 transition={{ duration: 0.5 }}
                 className={cn(
-                    "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-                    scrolled ? "bg-background/80 backdrop-blur-lg border-border py-3 shadow-sm" : "bg-transparent py-5"
+                    "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b border-transparent",
+                    scrolled ? "bg-background/40 backdrop-blur-2xl border-white/5 py-2 shadow-2xl shadow-black/20" : "bg-transparent py-5"
                 )}
             >
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
@@ -49,8 +49,8 @@ export default function Navbar() {
                                 <span className="text-2xl">🥣</span>
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold tracking-tight text-foreground leading-none">Desi Food</h1>
-                                <span className="text-xs text-muted-foreground tracking-widest font-medium">HUB</span>
+                                <h1 className="text-xl font-black tracking-tighter text-foreground leading-none bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-500">Desi Food</h1>
+                                <span className="text-[10px] text-primary tracking-[0.3em] font-black uppercase">Hub</span>
                             </div>
                         </Link>
 
