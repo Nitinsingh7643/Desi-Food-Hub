@@ -8,7 +8,7 @@ import { Loader2, DollarSign, Package, CheckCircle, Clock, Truck, XCircle, Searc
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { motion, AnimatePresence } from "framer-motion";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
 // Helper for badges
 const getStatusColor = (status: string) => {
@@ -38,6 +38,7 @@ export default function AdminDashboard() {
         if (!isAuthenticated) return;
         fetchData();
 
+        /* 
         // Real-time Socket.io Connection
         const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         const socket = io(socketUrl, {
@@ -82,6 +83,7 @@ export default function AdminDashboard() {
         return () => {
             socket.disconnect();
         };
+        */
     }, [isAuthenticated, user]);
 
     const fetchData = async () => {
