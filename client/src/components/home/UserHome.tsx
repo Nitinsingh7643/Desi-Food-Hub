@@ -48,36 +48,40 @@ export default function UserHome() {
     ];
 
     return (
-        <main className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden pt-24">
+        <main className="flex flex-col min-h-screen bg-[#050505] text-foreground overflow-x-hidden pt-24 relative">
+            
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
 
             {/* Header / Search Section */}
-            <section className="container mx-auto px-4 md:px-6 mb-8">
-                <div className="flex flex-col lg:flex-row gap-8 items-start justify-between">
+            <section className="container mx-auto px-4 md:px-6 mb-12 relative z-10">
+                <div className="flex flex-col lg:flex-row gap-10 items-start justify-between">
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
                         className="w-full lg:w-2/3"
                     >
-                        <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 leading-tight">
-                            {greeting}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">{user?.name?.split(' ')[0] || 'Foodie'}!</span>
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-3 tracking-tight">
+                            {greeting}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-500 to-orange-500 drop-shadow-sm">{user?.name?.split(' ')[0] || 'Foodie'}</span>
                         </h1>
-                        <p className="text-zinc-400 text-lg mb-6 flex items-center gap-2">
-                            <MapPin size={16} className="text-primary" /> Delivering to: <span className="text-white font-medium border-b border-dashed border-zinc-600">{user?.address || 'Set your location'}</span>
+                        <p className="text-zinc-400 text-lg mb-8 flex items-center gap-2 font-medium">
+                            <MapPin size={18} className="text-orange-500" /> Delivering to: <span className="text-zinc-200 border-b border-dashed border-zinc-600 pb-0.5">{user?.address || 'Set your location'}</span>
                         </p>
 
-                        {/* Search Bar */}
-                        <div className="relative group max-w-xl">
-                            <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity" />
-                            <div className="relative flex items-center bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                                <Search className="ml-4 text-zinc-400" size={20} />
+                        {/* Search Bar - Premium Glassmorphism */}
+                        <div className="relative group max-w-2xl">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500/30 to-purple-500/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500" />
+                            <div className="relative flex items-center bg-[#111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl transition-all duration-300 group-hover:border-white/20">
+                                <Search className="ml-5 text-zinc-400 group-focus-within:text-orange-400 transition-colors" size={22} />
                                 <input
                                     type="text"
-                                    placeholder="Search for 'Butter Chicken' or 'Paneer'..."
-                                    className="w-full bg-transparent text-white px-4 py-4 focus:outline-none placeholder:text-zinc-500"
+                                    placeholder="Craving Butter Chicken or Paneer Tikka?"
+                                    className="w-full bg-transparent text-white px-5 py-5 text-lg focus:outline-none placeholder:text-zinc-600"
                                 />
-                                <div className="pr-2">
-                                    <Button size="sm" className="bg-white/10 hover:bg-white/20 text-white rounded-lg h-9">
+                                <div className="pr-3">
+                                    <Button size="lg" className="bg-white/10 hover:bg-white/20 text-white rounded-xl h-12 px-6 font-semibold backdrop-blur-md transition-all">
                                         Search
                                     </Button>
                                 </div>
@@ -85,35 +89,43 @@ export default function UserHome() {
                         </div>
                     </motion.div>
 
-                    {/* Loyalty Card / Balance */}
+                    {/* Premium Loyalty Card */}
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                         className="w-full lg:w-1/3"
                     >
-                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 p-6 shadow-2xl group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Sparkles size={100} />
+                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-900 via-[#151515] to-black border border-white/10 p-7 shadow-2xl group transition-all duration-500 hover:border-orange-500/30">
+                            {/* Animated glowing border effect inner */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            
+                            <div className="absolute -top-10 -right-10 p-4 opacity-[0.03] transform rotate-12 group-hover:scale-110 transition-transform duration-700">
+                                <Sparkles size={160} />
                             </div>
-                            <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
+                            
+                            <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-xs font-bold tracking-widest text-zinc-500 uppercase">Desi Rewards</p>
-                                        <h3 className="text-2xl font-bold text-white mt-1">
+                                        <p className="text-xs font-bold tracking-[0.2em] text-zinc-500 uppercase mb-1">Desi Rewards</p>
+                                        <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                             {(user as any)?.points > 5000 ? 'Platinum' : (user as any)?.points > 1000 ? 'Gold' : 'Silver'} Member
                                         </h3>
                                     </div>
-                                    <div className="bg-yellow-500/20 text-yellow-500 p-2 rounded-lg">
-                                        <Star size={20} fill="currentColor" />
+                                    <div className="bg-gradient-to-br from-yellow-400/20 to-orange-500/20 text-yellow-500 p-2.5 rounded-xl border border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                                        <Star size={22} fill="currentColor" />
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-zinc-400 text-sm mb-1">Available Points</p>
-                                    <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                                        {(user as any)?.points?.toLocaleString() || '0'}
-                                    </p>
-                                    <p className="text-xs text-zinc-600 mt-2">Worth ₹{((user as any)?.points || 0) / 10}.00</p>
+                                
+                                <div className="pt-2 border-t border-white/5">
+                                    <p className="text-zinc-400 text-sm mb-1 font-medium">Available Balance</p>
+                                    <div className="flex items-baseline gap-2">
+                                        <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow-sm tracking-tight">
+                                            {(user as any)?.points?.toLocaleString() || '0'}
+                                        </p>
+                                        <span className="text-zinc-500 font-medium">pts</span>
+                                    </div>
+                                    <p className="text-sm text-zinc-500 mt-2 font-medium">Worth <span className="text-zinc-300">₹{((user as any)?.points || 0) / 10}.00</span></p>
                                 </div>
                             </div>
                         </div>
@@ -121,73 +133,105 @@ export default function UserHome() {
                 </div>
             </section>
 
-            {/* Special Offers Scroll */}
-            <section className="container mx-auto px-4 md:px-6 mb-12">
-                <div className="flex items-center gap-2 mb-4">
-                    <Tag className="text-primary" size={20} />
-                    <h2 className="text-xl font-bold text-white">Specially For You</h2>
+            {/* Special Offers Scroll - Modernized */}
+            <section className="container mx-auto px-4 md:px-6 mb-16 relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-orange-500/20 rounded-lg text-orange-500">
+                        <Tag size={20} />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white tracking-tight">Specially For You</h2>
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
-                    {offers.map((offer) => (
+                
+                <div className="flex gap-5 overflow-x-auto pb-6 pt-2 scrollbar-hide snap-x -mx-4 px-4 md:mx-0 md:px-0">
+                    {offers.map((offer, index) => (
                         <motion.div
                             key={offer.id}
-                            whileHover={{ scale: 1.02 }}
-                            className={`min-w-[280px] md:min-w-[320px] snap-center p-5 rounded-2xl bg-gradient-to-r ${offer.color} relative overflow-hidden shadow-lg cursor-pointer`}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            className="min-w-[300px] md:min-w-[340px] snap-center p-6 rounded-3xl relative overflow-hidden shadow-2xl cursor-pointer border border-white/10 group"
                         >
-                            <div className="relative z-10 text-white">
-                                <p className="font-medium opacity-90 text-sm mb-1">Use Code: {offer.code}</p>
-                                <h3 className="text-2xl font-bold mb-1">{offer.title}</h3>
-                                <p className="text-xs opacity-80">{offer.desc}</p>
+                            {/* Glass background replacing flat gradients */}
+                            <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-xl z-0" />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${offer.color} opacity-20 group-hover:opacity-30 transition-opacity duration-300 z-0`} />
+                            
+                            <div className="relative z-10 flex flex-col h-full justify-between gap-4">
+                                <div className="inline-flex items-center self-start px-3 py-1 bg-white/10 rounded-full border border-white/10 backdrop-blur-md">
+                                    <p className="font-semibold text-white/90 text-xs tracking-wide">CODE: {offer.code}</p>
+                                </div>
+                                
+                                <div>
+                                    <h3 className="text-3xl font-extrabold text-white mb-2 tracking-tight">{offer.title}</h3>
+                                    <p className="text-sm text-zinc-400 font-medium leading-relaxed">{offer.desc}</p>
+                                </div>
                             </div>
-                            <div className="absolute -right-4 -bottom-4 bg-white/20 w-24 h-24 rounded-full blur-xl" />
+                            
+                            {/* Decorative elements */}
+                            <div className={`absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-gradient-to-br ${offer.color} opacity-30 blur-2xl group-hover:blur-3xl transition-all duration-500`} />
                         </motion.div>
                     ))}
                 </div>
             </section>
 
-            {/* Recent Orders / Buy Again */}
-            <section className="container mx-auto px-4 md:px-6 mb-8">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <Clock className="text-primary" size={20} />
-                        <h2 className="text-xl font-bold text-white">Order Again</h2>
+            {/* Recent Orders - Premium List */}
+            <section className="container mx-auto px-4 md:px-6 mb-12 relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-zinc-800/80 rounded-lg text-white/90 border border-white/5">
+                            <Clock size={20} />
+                        </div>
+                        <h2 className="text-2xl font-bold text-white tracking-tight">Order Again</h2>
                     </div>
+                    <Button variant="ghost" className="text-zinc-400 hover:text-white font-medium">View All</Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {loadingOrders ? (
-                        <div className="col-span-full flex items-center justify-center py-8 text-zinc-500 gap-2">
-                            <Loader2 className="animate-spin" size={20} />
-                            Fetching your history...
+                        <div className="col-span-full flex items-center justify-center py-12 text-zinc-500 gap-3 bg-zinc-900/30 rounded-3xl border border-white/5">
+                            <Loader2 className="animate-spin text-orange-500" size={24} />
+                            <span className="font-medium">Fetching your history...</span>
                         </div>
                     ) : orders.length > 0 ? (
-                        orders.map((item) => (
-                            <div key={item._id} className="bg-white/5 border border-white/5 p-3 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-colors group cursor-pointer">
-                                <div className="w-16 h-16 rounded-lg bg-zinc-800 flex items-center justify-center overflow-hidden">
+                        orders.map((item, i) => (
+                            <motion.div 
+                                key={item._id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: i * 0.1 }}
+                                whileHover={{ y: -4 }}
+                                className="bg-[#111] backdrop-blur-sm border border-white/5 p-4 rounded-3xl flex items-center gap-5 hover:bg-white/[0.03] hover:border-white/10 hover:shadow-xl transition-all group cursor-pointer"
+                            >
+                                <div className="w-20 h-20 rounded-2xl bg-zinc-800 flex items-center justify-center overflow-hidden shadow-inner relative">
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
                                     <img
                                         src={item.orderItems[0]?.image || 'https://via.placeholder.com/150'}
                                         alt={item.orderItems[0]?.name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                     />
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="font-bold text-white group-hover:text-primary transition-colors line-clamp-1">
-                                        {item.orderItems[0]?.name} {item.orderItems.length > 1 && `+${item.orderItems.length - 1}`}
+                                    <h4 className="font-bold text-lg text-white group-hover:text-orange-400 transition-colors line-clamp-1 tracking-tight">
+                                        {item.orderItems[0]?.name} {item.orderItems.length > 1 && <span className="text-zinc-500 text-sm">+{item.orderItems.length - 1}</span>}
                                     </h4>
-                                    <div className="flex items-center text-xs text-zinc-400 mt-1 gap-2">
-                                        <span>₹{item.totalPrice}</span>
-                                        <span>•</span>
-                                        <span className="capitalize">{new Date(item.createdAt).toLocaleDateString()}</span>
+                                    <div className="flex items-center text-sm text-zinc-500 mt-1.5 gap-2 font-medium">
+                                        <span className="text-zinc-300">₹{item.totalPrice}</span>
+                                        <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                                        <span className="capitalize">{new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                     </div>
                                 </div>
-                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                                    <ArrowRight size={16} />
+                                <div className="h-10 w-10 rounded-full bg-white/5 group-hover:bg-orange-500 flex items-center justify-center text-zinc-400 group-hover:text-white transition-all transform group-hover:scale-110 shadow-sm border border-white/5">
+                                    <ArrowRight size={18} />
                                 </div>
-                            </div>
+                            </motion.div>
                         ))
                     ) : (
-                        <div className="col-span-full bg-white/5 border border-dashed border-white/10 rounded-xl p-8 text-center text-zinc-500">
-                            No recent orders yet. Time to change that!
+                        <div className="col-span-full bg-[#111]/50 border border-dashed border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center">
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 text-zinc-500">
+                                <Search size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">No recent orders yet</h3>
+                            <p className="text-zinc-500">Time to explore our delicious menu and change that!</p>
                         </div>
                     )}
                 </div>
