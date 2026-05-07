@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { getAllOrders, updateOrderStatus, getAdminStats } from "@/lib/api/auth";
-import { Loader2, DollarSign, Package, CheckCircle, Clock, Truck, XCircle, Search, Filter, ArrowUpRight, ArrowDownRight, TrendingUp, Users } from "lucide-react";
+import { Loader2, DollarSign, Package, CheckCircle, Clock, Truck, XCircle, Search, Filter, ArrowUpRight, ArrowDownRight, TrendingUp, Users, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { io } from "socket.io-client";
 
 // Helper for badges
 const getStatusColor = (status: string) => {
@@ -31,10 +32,52 @@ export default function AdminDashboard() {
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
+    const [notifications, setNotifications] = useState<string[]>([]);
 
     useEffect(() => {
         if (!isAuthenticated) return;
         fetchData();
+
+        // Real-time Socket.io Connection
+        const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const socket = io(socketUrl, {
+            withCredentials: true
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected to real-time server');
+            socket.emit('joinAdmin');
+        });
+
+        socket.on('newOrder', (newOrder) => {
+            // Play Notification Sound
+            try {
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                audio.play();
+            } catch (e) { console.log('Audio play failed', e); }
+
+            // Show Toast Notification
+            setNotifications(prev => [`New Order Received: ₹${newOrder.totalAmount}`, ...prev]);
+            setTimeout(() => {
+                setNotifications(prev => prev.slice(0, -1));
+            }, 5000);
+
+            // Update State
+            setOrders(prev => [newOrder, ...prev]);
+            setStats((prev: any) => ({
+                ...prev,
+                totalOrders: (prev?.totalOrders || 0) + 1,
+                pendingOrders: (prev?.pendingOrders || 0) + 1
+            }));
+        });
+
+        socket.on('orderUpdated', (updatedOrder) => {
+            setOrders(prev => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o));
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, [isAuthenticated, user]);
 
     const fetchData = async () => {
@@ -114,11 +157,37 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-[#09090b] text-white p-6 space-y-8">
+        <div className="min-h-screen bg-[#09090b] text-white p-6 space-y-8 relative overflow-hidden">
+            
+            {/* Real-time Notifications */}
+            <div className="fixed top-24 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+                <AnimatePresence>
+                    {notifications.map((note, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: 50, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                            className="bg-zinc-900 border border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)] text-white px-4 py-3 rounded-xl flex items-center gap-3"
+                        >
+                            <div className="p-2 bg-orange-500/20 rounded-full text-orange-400">
+                                <Bell size={18} className="animate-pulse" />
+                            </div>
+                            <span className="font-semibold">{note}</span>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Dashboard Overview</h1>
-                    <p className="text-gray-400 mt-1">Welcome back, Admin! Here's your business at a glance.</p>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent flex items-center gap-3">
+                        Dashboard Overview
+                        <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> Live
+                        </span>
+                    </h1>
+                    <p className="text-gray-400 mt-1">Welcome back, Admin! Real-time updates are active.</p>
                 </div>
                 <div className="flex gap-3">
                     <button onClick={fetchData} className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl text-sm font-medium transition-colors">

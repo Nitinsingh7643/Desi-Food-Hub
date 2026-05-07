@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
 import connectDB from './config/db';
 
 // Route files
@@ -58,7 +60,35 @@ app.use('/api/ai', aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+// Create HTTP server
+const httpServer = http.createServer(app);
+
+// Initialize Socket.io
+const io = new Server(httpServer, {
+    cors: {
+        origin: allowedOrigins,
+        credentials: true
+    }
+});
+
+// Make io accessible to our routers/controllers
+app.set('io', io);
+
+io.on('connection', (socket) => {
+    console.log(`Socket Connected: ${socket.id}`);
+    
+    // Optional: Allow clients to join specific rooms (like 'admin')
+    socket.on('joinAdmin', () => {
+        socket.join('admin_room');
+        console.log(`Socket ${socket.id} joined admin_room`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`Socket Disconnected: ${socket.id}`);
+    });
+});
+
+const server = httpServer.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
 

@@ -56,6 +56,12 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
                 }
             }
 
+            // Real-time: Emit new order to admin room
+            const io = req.app.get('io');
+            if (io) {
+                io.to('admin_room').emit('newOrder', await createdOrder.populate('user', 'name email'));
+            }
+
             res.status(201).json({
                 success: true,
                 data: createdOrder
@@ -115,6 +121,13 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
             }
 
             const updatedOrder = await order.save();
+
+            // Real-time: Emit order update to admin room
+            const io = req.app.get('io');
+            if (io) {
+                io.to('admin_room').emit('orderUpdated', updatedOrder);
+            }
+
             res.json({ success: true, data: updatedOrder });
         } else {
             res.status(404).json({ success: false, message: 'Order not found' });
