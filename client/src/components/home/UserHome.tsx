@@ -14,14 +14,14 @@ export default function UserHome() {
     const { user } = useAuth();
     const [orders, setOrders] = useState<any[]>([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
-    const currentTime = new Date();
-    const hours = currentTime.getHours();
-
-    let greeting = 'Good Morning';
-    if (hours >= 12 && hours < 17) greeting = 'Good Afternoon';
-    if (hours >= 17) greeting = 'Good Evening';
+    const [greeting, setGreeting] = useState('Good Morning');
 
     useEffect(() => {
+        const hours = new Date().getHours();
+        if (hours >= 12 && hours < 17) setGreeting('Good Afternoon');
+        else if (hours >= 17) setGreeting('Good Evening');
+        else setGreeting('Good Morning');
+        
         const fetchOrders = async () => {
             const token = localStorage.getItem('token');
             if (token) {
@@ -37,7 +37,6 @@ export default function UserHome() {
                 }
             }
         };
-
         fetchOrders();
     }, []);
 

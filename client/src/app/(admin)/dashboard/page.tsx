@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
-    const [notifications, setNotifications] = useState<string[]>([]);
+    const [notifications, setNotifications] = useState<{ id: string; message: string }[]>([]);
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -57,18 +57,22 @@ export default function AdminDashboard() {
             } catch (e) { console.log('Audio play failed', e); }
 
             // Show Toast Notification
-            setNotifications(prev => [`New Order Received: ₹${newOrder.totalAmount}`, ...prev]);
+            const id = `${newOrder._id}-${Date.now()}`;
+            setNotifications(prev => [{ id, message: `New Order Received: ₹${newOrder.totalAmount}` }, ...prev]);
             setTimeout(() => {
-                setNotifications(prev => prev.slice(0, -1));
+                setNotifications(prev => prev.filter(n => n.id !== id));
             }, 5000);
 
             // Update State
             setOrders(prev => [newOrder, ...prev]);
-            setStats((prev: any) => ({
-                ...prev,
-                totalOrders: (prev?.totalOrders || 0) + 1,
-                pendingOrders: (prev?.pendingOrders || 0) + 1
-            }));
+            setStats((prev: any) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    totalOrders: (prev.totalOrders || 0) + 1,
+                    pendingOrders: (prev.pendingOrders || 0) + 1
+                };
+            });
         });
 
         socket.on('orderUpdated', (updatedOrder) => {
@@ -162,9 +166,9 @@ export default function AdminDashboard() {
             {/* Real-time Notifications */}
             <div className="fixed top-24 right-6 z-50 flex flex-col gap-2 pointer-events-none">
                 <AnimatePresence>
-                    {notifications.map((note, index) => (
+                    {notifications.map((note) => (
                         <motion.div
-                            key={index}
+                            key={note.id}
                             initial={{ opacity: 0, x: 50, scale: 0.9 }}
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
@@ -173,7 +177,7 @@ export default function AdminDashboard() {
                             <div className="p-2 bg-orange-500/20 rounded-full text-orange-400">
                                 <Bell size={18} className="animate-pulse" />
                             </div>
-                            <span className="font-semibold">{note}</span>
+                            <span className="font-semibold">{note.message}</span>
                         </motion.div>
                     ))}
                 </AnimatePresence>
