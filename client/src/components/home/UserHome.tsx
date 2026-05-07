@@ -48,11 +48,22 @@ export default function UserHome() {
     ];
 
     return (
-        <main className="flex flex-col min-h-screen bg-[#050505] text-foreground overflow-x-hidden pt-24 relative">
+        <main className="flex flex-col min-h-screen text-foreground overflow-x-hidden pt-24 relative">
             
+            {/* Cinematic Background Image */}
+            <div className="fixed inset-0 z-[-2]">
+                <img 
+                    src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop" 
+                    alt="Background" 
+                    className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
+                />
+            </div>
+            {/* Deep gradient overlay to ensure text readability */}
+            <div className="fixed inset-0 z-[-1] bg-gradient-to-b from-[#050505]/90 via-[#050505]/70 to-[#050505]/95 backdrop-blur-sm" />
+
             {/* Ambient Background Glows */}
-            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-600/20 rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[150px] pointer-events-none" />
 
             {/* Header / Search Section */}
             <section className="container mx-auto px-4 md:px-6 mb-12 relative z-10">
